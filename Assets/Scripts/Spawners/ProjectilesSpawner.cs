@@ -29,7 +29,6 @@ public class ProjectilesSpawner : Spawner
     private void AcquireProjectile(GameObject item)
     {
         item.transform.SetPositionAndRotation(_spawnPoint.position, _spawnPoint.rotation);
-        item.GetComponent<Projectile>().Reset();
         item.SetActive(true);
     }
 }

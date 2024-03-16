@@ -1,7 +1,8 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class CannonTower : Tower {
+public class CannonTower : Tower
+{
     private Transform _nearestMonster;
 
     private void Start()

@@ -1,15 +1,27 @@
-﻿using UnityEngine;
+﻿using System.Threading;
+using UnityEngine;
 using UnityEngine.Events;
 
 public class Monster : MonoBehaviour
 {
     [HideInInspector] public UnityEvent TargetReachedEvent = new UnityEvent();
+    [HideInInspector] public UnityEvent DeathEvent = new UnityEvent();
 
     [SerializeField] private float _movingSpeed = 0.1f;
     [SerializeField] private int _maxHealth = 30;
 
     private int _currentHealth;
     private Transform _movementTarget;
+
+    public void ApplyDamage(int damage)
+    {
+        if (damage <= 0)
+            Debug.LogError($"Expected positive damage, received: {damage}");
+
+        _currentHealth -= damage;
+        if (_currentHealth <= 0)
+            DeathEvent.Invoke();
+    }
 
     public void SetTarget(Transform movementTarget)
     {
@@ -40,5 +52,6 @@ public class Monster : MonoBehaviour
     private void OnDestroy()
     {
         TargetReachedEvent.RemoveAllListeners();
+        DeathEvent.RemoveAllListeners();
     }
 }

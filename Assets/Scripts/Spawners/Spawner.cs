@@ -3,7 +3,7 @@
 public abstract class Spawner : MonoBehaviour
 {
     [SerializeField] protected GameObject _spawnablePrefab;
-    
+
     protected Pool<GameObject> _pool;
 
     protected virtual void Start()

@@ -39,6 +39,7 @@ public class MonsterSpawner : Spawner
         var monster = gameObject.GetComponent<Monster>();
         monster.SetTarget(_monsterMovingTarget);
         monster.TargetReachedEvent.AddListener(() => _pool.Release(gameObject));
+        monster.DeathEvent.AddListener(() => _pool.Release(gameObject));
         return gameObject;
     }
 
