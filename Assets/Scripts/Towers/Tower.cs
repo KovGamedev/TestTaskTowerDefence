@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using UnityEngine;
 using System.Collections;
-using System.Xml.Serialization;
 
 [RequireComponent(typeof(ProjectilesSpawner))]
 public abstract class Tower : MonoBehaviour
