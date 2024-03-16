@@ -2,6 +2,8 @@
 
 public class ProjectilesSpawner : Spawner
 {
+    [SerializeField] private Transform _spawnPoint;
+
     public Projectile GetProjectile()
     {
         return _pool.Acquire().GetComponent<Projectile>();
@@ -14,7 +16,7 @@ public class ProjectilesSpawner : Spawner
 
     private GameObject CreateProjectile()
     {
-        var gameObject = Instantiate(_spawnablePrefab, transform.position, Quaternion.identity);
+        var gameObject = Instantiate(_spawnablePrefab, _spawnPoint.position, _spawnPoint.rotation);
         gameObject.GetComponent<Projectile>().TargetReachedEvent.AddListener(() => _pool.Release(gameObject));
         return gameObject;
     }
@@ -26,7 +28,7 @@ public class ProjectilesSpawner : Spawner
 
     private void AcquireProjectile(GameObject item)
     {
-        item.transform.position = transform.position;
+        item.transform.SetPositionAndRotation(_spawnPoint.position, _spawnPoint.rotation);
         item.GetComponent<Projectile>().Reset();
         item.SetActive(true);
     }

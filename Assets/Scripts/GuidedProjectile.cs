@@ -1,9 +1,15 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class GuidedProjectile : Projectile
 {
-	private void Update () {
+    protected Transform _target;
+
+    public void SetTarget(Transform target)
+    {
+        _target = target;
+    }
+
+    private void Update () {
         if (_target == null) {
 			Destroy (gameObject);
 			return;

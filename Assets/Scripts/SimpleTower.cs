@@ -19,7 +19,7 @@ public class SimpleTower : Tower
         
 		yield return new WaitUntil(() => Vector3.Distance(transform.position, _nearestMonster.position) <= _shootingRange);
 
-        _projectilesSpawner.GetProjectile().SetTarget(_nearestMonster);
+        (_projectilesSpawner.GetProjectile() as GuidedProjectile).SetTarget(_nearestMonster);
 
         yield return new WaitForSeconds(_shootingInterval);
 
