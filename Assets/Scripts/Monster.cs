@@ -1,5 +1,4 @@
-﻿using System.Threading;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 
 public class Monster : MonoBehaviour
@@ -12,6 +11,11 @@ public class Monster : MonoBehaviour
 
     private int _currentHealth;
     private Transform _movementTarget;
+
+    public float GetMovingSpeed()
+    {
+        return _movingSpeed;
+    }
 
     public void ApplyDamage(int damage)
     {

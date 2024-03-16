@@ -3,7 +3,12 @@ using UnityEngine;
 
 public class CannonProjectile : Projectile
 {
-    [SerializeField, Min(0f)] private float _lifetime;
+    [SerializeField, Min(0f)] private float _lifetime; // Endless life insurance
+
+    public float GetMovingSpeed()
+    {
+        return _movingSpeed;
+    }
 
     private void Start()
     {

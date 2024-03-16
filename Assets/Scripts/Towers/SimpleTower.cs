@@ -2,6 +2,6 @@
 {
     protected override void CreateProjectile()
     {
-        (_projectilesSpawner.GetProjectile() as GuidedProjectile).SetTarget(_nearestMonster);
+        (_projectilesSpawner.GetProjectile() as GuidedProjectile).SetTarget(_nearestMonster.transform);
     }
 }

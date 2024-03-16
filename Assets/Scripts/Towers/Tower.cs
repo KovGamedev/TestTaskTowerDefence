@@ -10,7 +10,7 @@ public abstract class Tower : MonoBehaviour
     [SerializeField] protected float _shootingRange = 4f;
 
     protected ProjectilesSpawner _projectilesSpawner;
-    protected Transform _nearestMonster;
+    protected Monster _nearestMonster;
 
     protected void Awake()
     {
@@ -22,6 +22,7 @@ public abstract class Tower : MonoBehaviour
         StartCoroutine(FireIfPossible());
     }
 
+    // TODO Разделить на две корутины? Одна ищет врагов, а другая стреляет?
     protected IEnumerator FireIfPossible()
     {
         yield return new WaitUntil(() => {
@@ -29,7 +30,10 @@ public abstract class Tower : MonoBehaviour
             return _nearestMonster != null;
         });
 
-        yield return new WaitUntil(() => Vector3.Distance(transform.position, _nearestMonster.position) <= _shootingRange);
+        _nearestMonster.TargetReachedEvent.AddListener(StopShootingIfMonsterDestroyed);
+        _nearestMonster.DeathEvent.AddListener(StopShootingIfMonsterDestroyed);
+
+        yield return new WaitUntil(() => Vector3.Distance(transform.position, _nearestMonster.transform.position) <= _shootingRange);
 
         CreateProjectile();
 
@@ -38,11 +42,17 @@ public abstract class Tower : MonoBehaviour
         StartCoroutine(FireIfPossible());
     }
 
-    protected Transform GetNearestMonster()
+    protected Monster GetNearestMonster()
     {
         return _monsterSpawner.GetActiveMonsters()
-            .OrderBy(monsterTransform => (monsterTransform.position - transform.position).sqrMagnitude)
+            .OrderBy(monster => (monster.transform.position - transform.position).sqrMagnitude)
             .FirstOrDefault();
+    }
+
+    protected void StopShootingIfMonsterDestroyed()
+    {
+        StopAllCoroutines();
+        StartCoroutine(FireIfPossible());
     }
 
     protected abstract void CreateProjectile();
