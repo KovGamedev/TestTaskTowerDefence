@@ -29,7 +29,6 @@ public class CannonTower : Tower
             _isTowerDirected = false;
             return;
         }
-        Debug.DrawLine(_cannonballSpawnPoint.position, GetTargetWithOffset());
 
         var directionToHitPoint = GetTargetWithOffset() - _cannonBarrel.position;
         Quaternion rotation = Quaternion.LookRotation(directionToHitPoint, Vector3.up);
@@ -48,8 +47,12 @@ public class CannonTower : Tower
         // t = (Xm0 - Xp0) / (Vp - Vm)
 
         var futureSpawnPoint = new Ray(_cannonBarrel.position, _nearestMonster.transform.position).GetPoint(_cannonballSpawnPoint.localPosition.z);
+        var monsterSpeedSign = Vector3.Angle(
+            _nearestMonster.transform.forward,
+            _cannonBarrel.position - _nearestMonster.transform.position
+        ) < 90 ? 1 : -1;
         var timeToHit = Vector3.Distance(_nearestMonster.transform.position, futureSpawnPoint) /
-            (_projectileMovementSpeed - _nearestMonster.GetMovingSpeed());
+            (_projectileMovementSpeed + monsterSpeedSign * _nearestMonster.GetMovingSpeed());
         return _nearestMonster.transform.position + _nearestMonster.transform.forward * _nearestMonster.GetMovingSpeed() * timeToHit;
     }
 }

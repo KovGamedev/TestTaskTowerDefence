@@ -42,7 +42,7 @@ public abstract class Tower : MonoBehaviour
     protected Monster GetNearestMonster()
     {
         return _monsterSpawner.GetActiveMonsters()
-            .FindAll(monster => Vector3.Distance(transform.position, monster.transform.position) <= _shootingRange)
+            .Where(monster => Vector3.Distance(transform.position, monster.transform.position) <= _shootingRange)
             .OrderBy(monster => (monster.transform.position - transform.position).sqrMagnitude)
             .FirstOrDefault();
     }
