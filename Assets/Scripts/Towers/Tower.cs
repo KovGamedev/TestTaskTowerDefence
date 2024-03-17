@@ -19,39 +19,37 @@ public abstract class Tower : MonoBehaviour
 
     protected void Start()
     {
+        StartCoroutine(FindNearestMonster());
         StartCoroutine(FireIfPossible());
     }
 
-    // TODO Разделить на две корутины? Одна ищет врагов, а другая стреляет?
-    protected IEnumerator FireIfPossible()
+    protected IEnumerator FindNearestMonster()
     {
         yield return new WaitUntil(() => {
             _nearestMonster = GetNearestMonster();
             return _nearestMonster != null;
         });
-
-        _nearestMonster.TargetReachedEvent.AddListener(StopShootingIfMonsterDestroyed);
-        _nearestMonster.DeathEvent.AddListener(StopShootingIfMonsterDestroyed);
-
-        yield return new WaitUntil(() => Vector3.Distance(transform.position, _nearestMonster.transform.position) <= _shootingRange);
-
-        CreateProjectile();
-
-        yield return new WaitForSeconds(_shootingInterval);
-
-        StartCoroutine(FireIfPossible());
+        yield return new WaitUntil(() => {
+            var isMonsterOutOfRange = Vector3.Distance(transform.position, _nearestMonster.transform.position) > _shootingRange;
+            var isMonsterActive = _nearestMonster.gameObject.activeSelf;
+            return isMonsterOutOfRange || isMonsterActive;
+        });
+        StartCoroutine(FindNearestMonster());
     }
 
     protected Monster GetNearestMonster()
     {
         return _monsterSpawner.GetActiveMonsters()
+            .FindAll(monster => Vector3.Distance(transform.position, monster.transform.position) <= _shootingRange)
             .OrderBy(monster => (monster.transform.position - transform.position).sqrMagnitude)
             .FirstOrDefault();
     }
 
-    protected void StopShootingIfMonsterDestroyed()
+    protected IEnumerator FireIfPossible()
     {
-        StopAllCoroutines();
+        yield return new WaitUntil(() => _nearestMonster != null);
+        CreateProjectile();
+        yield return new WaitForSeconds(_shootingInterval);
         StartCoroutine(FireIfPossible());
     }
 
