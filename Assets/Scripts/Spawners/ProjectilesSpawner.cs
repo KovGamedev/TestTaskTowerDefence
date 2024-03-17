@@ -4,6 +4,14 @@ public class ProjectilesSpawner : Spawner
 {
     [SerializeField] private Transform _spawnPoint;
 
+    private GameObject _currentProjectile;
+
+    public void DirectAndActivateProjectile()
+    {
+        _currentProjectile.transform.SetPositionAndRotation(_spawnPoint.position, _spawnPoint.rotation);
+        _currentProjectile.SetActive(true);
+    }
+
     public Projectile GetProjectile()
     {
         return _pool.Acquire().GetComponent<Projectile>();
@@ -28,7 +36,6 @@ public class ProjectilesSpawner : Spawner
 
     private void AcquireProjectile(GameObject item)
     {
-        item.transform.SetPositionAndRotation(_spawnPoint.position, _spawnPoint.rotation);
-        item.SetActive(true);
+        _currentProjectile = item;
     }
 }

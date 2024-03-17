@@ -1,4 +1,6 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using UnityEngine;
+using UnityEngine.UIElements;
 
 public class CannonTower : Tower
 {
@@ -11,18 +13,29 @@ public class CannonTower : Tower
     protected override void CreateProjectile()
     {
         _projectileMovementSpeed = (_projectilesSpawner.GetProjectile() as CannonProjectile).GetMovingSpeed();
+        StartCoroutine(DirectAndActivateProjectile());
+    }
+
+    private IEnumerator DirectAndActivateProjectile()
+    {
+        yield return new WaitUntil(() => _isTowerDirected);
+        _projectilesSpawner.DirectAndActivateProjectile();
     }
 
     private void FixedUpdate()
     {
         if (_nearestMonster == null || !_nearestMonster.gameObject.activeSelf)
+        {
+            _isTowerDirected = false;
             return;
+        }
         Debug.DrawLine(_cannonballSpawnPoint.position, GetTargetWithOffset());
 
         var directionToHitPoint = GetTargetWithOffset() - _cannonBarrel.position;
         Quaternion rotation = Quaternion.LookRotation(directionToHitPoint, Vector3.up);
-        _cannonBase.transform.localRotation = Quaternion.Euler(0f, rotation.eulerAngles.y, 0f);
+        _cannonBase.transform.eulerAngles = new Vector3(0f, rotation.eulerAngles.y, 0f);
         _cannonBarrel.transform.localRotation = Quaternion.Euler(rotation.eulerAngles.x, 0f, 0f);
+        _isTowerDirected = true;
     }
 
     private Vector3 GetTargetWithOffset() {
@@ -34,7 +47,8 @@ public class CannonTower : Tower
         // Xm0 - Xp0 = t * (Vp - Vm)
         // t = (Xm0 - Xp0) / (Vp - Vm)
 
-        var timeToHit = Vector3.Distance(_nearestMonster.transform.position, _cannonballSpawnPoint.position) /
+        var futureSpawnPoint = new Ray(_cannonBarrel.position, _nearestMonster.transform.position).GetPoint(_cannonballSpawnPoint.localPosition.z);
+        var timeToHit = Vector3.Distance(_nearestMonster.transform.position, futureSpawnPoint) /
             (_projectileMovementSpeed - _nearestMonster.GetMovingSpeed());
         return _nearestMonster.transform.position + _nearestMonster.transform.forward * _nearestMonster.GetMovingSpeed() * timeToHit;
     }

@@ -11,6 +11,7 @@ public abstract class Tower : MonoBehaviour
 
     protected ProjectilesSpawner _projectilesSpawner;
     protected Monster _nearestMonster;
+    protected bool _isTowerDirected = true;
 
     protected void Awake()
     {
@@ -31,9 +32,10 @@ public abstract class Tower : MonoBehaviour
         });
         yield return new WaitUntil(() => {
             var isMonsterOutOfRange = Vector3.Distance(transform.position, _nearestMonster.transform.position) > _shootingRange;
-            var isMonsterActive = _nearestMonster.gameObject.activeSelf;
-            return isMonsterOutOfRange || isMonsterActive;
+            var isMonsterDead = !_nearestMonster.gameObject.activeSelf;
+            return isMonsterOutOfRange || isMonsterDead;
         });
+        _nearestMonster = null;
         StartCoroutine(FindNearestMonster());
     }
 
