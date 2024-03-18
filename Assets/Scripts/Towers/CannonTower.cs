@@ -7,6 +7,7 @@ public class CannonTower : Tower
     [SerializeField] private Transform _cannonBase;
     [SerializeField] private Transform _cannonBarrel;
     [SerializeField] private Transform _cannonballSpawnPoint;
+    [SerializeField] private ParticleSystem _particles;
 
     private float _projectileMovementSpeed;
 
@@ -20,6 +21,7 @@ public class CannonTower : Tower
     {
         yield return new WaitUntil(() => _isTowerDirected);
         _projectilesSpawner.DirectAndActivateProjectile();
+        _particles.Play();
     }
 
     private void FixedUpdate()
