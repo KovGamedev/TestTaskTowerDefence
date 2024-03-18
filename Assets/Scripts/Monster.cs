@@ -32,14 +32,14 @@ public class Monster : MonoBehaviour
         _movementTarget = movementTarget;
     }
 
-    public void Reset()
+    public void ResetData()
     {
         _currentHealth = _maxHealth;
     }
 
     private void Start()
     {
-        Reset();
+        ResetData();
     }
 
     private void FixedUpdate()

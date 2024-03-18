@@ -9,6 +9,7 @@ public class ProjectilesSpawner : Spawner
     public void DirectAndActivateProjectile()
     {
         _currentProjectile.transform.SetPositionAndRotation(_spawnPoint.position, _spawnPoint.rotation);
+        _currentProjectile.GetComponent<Projectile>().ResetData();
         _currentProjectile.SetActive(true);
     }
 

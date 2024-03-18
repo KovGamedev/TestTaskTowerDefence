@@ -55,7 +55,7 @@ public class MonsterSpawner : Spawner
         Quaternion targetRotation = Quaternion.LookRotation(directionToTarget, Vector3.up);
         item.transform.SetPositionAndRotation(transform.position, Quaternion.Euler(0f, targetRotation.eulerAngles.y, 0f));
         var monster = item.GetComponent<Monster>();
-        monster.Reset();
+        monster.ResetData();
         _activeMonsters.Add(monster);
         item.SetActive(true);
     }
