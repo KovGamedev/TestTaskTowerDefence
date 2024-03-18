@@ -1,19 +1,37 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-public class CannonTower : Tower
+public class SmoothedCannonTower : Tower
 {
     [SerializeField] private Transform _cannonBase;
     [SerializeField] private Transform _cannonBarrel;
     [SerializeField] private Transform _cannonballSpawnPoint;
     [SerializeField] private ParticleSystem _particles;
+    [Header("Settings")]
+    [SerializeField, Range(0f, 1f)] private float _yawSpeed;
+    [SerializeField, Range(0f, 1f)] private float _pitchSpeed;
 
     private float _projectileMovementSpeed;
+    private float _yawPercent;
+    private float _pitchPercent;
+
+    protected override void Start()
+    {
+        base.Start();
+        _isTowerDirected = false;
+    }
 
     protected override void CreateProjectile()
     {
         _projectileMovementSpeed = (_projectilesSpawner.GetProjectile() as CannonProjectile).GetMovingSpeed();
         StartCoroutine(DirectAndActivateProjectile());
+    }
+
+    protected override void HandleLosing()
+    {
+        _isTowerDirected = false;
+        _yawPercent = 0f;
+        _pitchPercent = 0f;
     }
 
     private IEnumerator DirectAndActivateProjectile()
@@ -26,16 +44,27 @@ public class CannonTower : Tower
     private void FixedUpdate()
     {
         if (_nearestMonster == null || !_nearestMonster.gameObject.activeSelf)
-        {
-            _isTowerDirected = false;
             return;
-        }
 
         var directionToHitPoint = GetTargetWithOffset() - _cannonBarrel.position;
-        Quaternion rotation = Quaternion.LookRotation(directionToHitPoint, Vector3.up);
-        _cannonBase.transform.eulerAngles = new Vector3(0f, rotation.eulerAngles.y, 0f);
-        _cannonBarrel.transform.localRotation = Quaternion.Euler(rotation.eulerAngles.x, 0f, 0f);
-        _isTowerDirected = true;
+        Quaternion targetRotation = Quaternion.LookRotation(directionToHitPoint, Vector3.up);
+        ChangeYaw(targetRotation);
+        ChangePitch(targetRotation);
+        _isTowerDirected = 1f <= _yawPercent && 1f <= _pitchPercent;
+    }
+
+    private void ChangeYaw(Quaternion targetRotation)
+    {
+        var cannonBaseTargetRotation = Quaternion.Euler(0f, targetRotation.eulerAngles.y, 0f);
+        _cannonBase.rotation = Quaternion.Lerp(_cannonBase.rotation, cannonBaseTargetRotation, _yawPercent);
+        _yawPercent += _yawSpeed;
+    }
+
+    private void ChangePitch(Quaternion targetRotation)
+    {
+        var cannonBarrelTargetRotation = Quaternion.Euler(targetRotation.eulerAngles.x, 0f, 0f);
+        _cannonBarrel.localRotation = Quaternion.Lerp(_cannonBarrel.localRotation, cannonBarrelTargetRotation, _pitchPercent);
+        _pitchPercent += _pitchSpeed;
     }
 
     private Vector3 GetTargetWithOffset() {

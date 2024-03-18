@@ -18,7 +18,7 @@ public abstract class Tower : MonoBehaviour
         _projectilesSpawner = GetComponent<ProjectilesSpawner>();
     }
 
-    protected void Start()
+    protected virtual void Start()
     {
         StartCoroutine(FindNearestMonster());
         StartCoroutine(FireIfPossible());
@@ -36,8 +36,11 @@ public abstract class Tower : MonoBehaviour
             return isMonsterOutOfRange || isMonsterDead;
         });
         _nearestMonster = null;
+        HandleLosing();
         StartCoroutine(FindNearestMonster());
     }
+
+    protected virtual void HandleLosing() { }
 
     protected Monster GetNearestMonster()
     {
