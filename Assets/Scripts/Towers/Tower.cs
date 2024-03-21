@@ -26,18 +26,20 @@ public abstract class Tower : MonoBehaviour
 
     protected IEnumerator FindNearestMonster()
     {
-        yield return new WaitUntil(() => {
-            _nearestMonster = GetNearestMonster();
-            return _nearestMonster != null;
-        });
-        yield return new WaitUntil(() => {
-            var isMonsterOutOfRange = Vector3.Distance(transform.position, _nearestMonster.transform.position) > _shootingRange;
-            var isMonsterDead = !_nearestMonster.gameObject.activeSelf;
-            return isMonsterOutOfRange || isMonsterDead;
-        });
-        _nearestMonster = null;
-        HandleLosing();
-        StartCoroutine(FindNearestMonster());
+        while (true)
+        {
+            yield return new WaitUntil(() => {
+                _nearestMonster = GetNearestMonster();
+                return _nearestMonster != null;
+            });
+            yield return new WaitUntil(() => {
+                var isMonsterOutOfRange = Vector3.Distance(transform.position, _nearestMonster.transform.position) > _shootingRange;
+                var isMonsterDead = !_nearestMonster.gameObject.activeSelf;
+                return isMonsterOutOfRange || isMonsterDead;
+            });
+            _nearestMonster = null;
+            HandleLosing();
+        }
     }
 
     protected virtual void HandleLosing() { }
@@ -52,10 +54,12 @@ public abstract class Tower : MonoBehaviour
 
     protected IEnumerator FireIfPossible()
     {
-        yield return new WaitUntil(() => _nearestMonster != null);
-        CreateProjectile();
-        yield return new WaitForSeconds(_shootingInterval);
-        StartCoroutine(FireIfPossible());
+        while (true)
+        {
+            yield return new WaitUntil(() => _nearestMonster != null);
+            CreateProjectile();
+            yield return new WaitForSeconds(_shootingInterval);
+        }
     }
 
     protected abstract void CreateProjectile();

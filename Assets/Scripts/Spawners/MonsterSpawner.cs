@@ -23,9 +23,11 @@ public class MonsterSpawner : Spawner
 
     protected IEnumerator Spawn(float delay)
     {
-        yield return new WaitForSeconds(delay);
-        _pool.Acquire();
-        StartCoroutine(Spawn(_spawnInterval));
+        while (true)
+        {
+            yield return new WaitForSeconds(delay);
+            _pool.Acquire();
+        }
     }
 
     protected override Pool<GameObject> CreatePool()
